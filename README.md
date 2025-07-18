@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# One-Week Project: “TaskM” - Task Manager with Auth, UI, DB, and AI
 
-## Getting Started
+A simple but elegant productivity web app with:
+- User authentication (Supabase)
+- Task creation, editing, and filtering
+- AI-assisted task suggestions
+- Modern UI (Tailwind + shadcn/ui)
+- Hosted online (Vercel)
 
-First, run the development server:
+## Features (Planned for 7 Days)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+| Feature | Tools to Learn/Use |
+|--------|--------------------|
+| Sign up / Sign in | Supabase Auth + shadcn/ui Inputs/Dialogs |
+| Create/edit/delete task | Supabase DB (PostgreSQL) |
+| Tag tasks as “Todo”, “In Progress”, “Done” | UI logic + DB updates |
+| Filter/search tasks | Tailwind forms + query filters |
+| Dark mode toggle | shadcn/ui + Tailwind theming |
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Stretch Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Feature | Tools |
+|--------|-------|
+| AI: Suggest 3 daily tasks | OpenAI API (text generation) |
+| File attachment to tasks | Supabase Storage |
+| Pomodoro timer w/ animation | Framer Motion |
+| Realtime sync | Supabase Realtime (if time permits) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Day-by-Day Plan (1-Week Sprint)
 
-## Learn More
+| Day | Goal | Tasks |
+|-----|------|-------|
+| 1 | Setup Project | Init Next.js + Tailwind + shadcn/ui + Supabase |
+| 2 | User Auth | Implement register/login/logout pages using Supabase |
+| 3 | Task CRUD | Create task DB in Supabase, build task list UI |
+| 4 | Task Filters + Dark Mode | Add filtering (by tag/status) and toggle theme |
+| 5 | Add AI (OpenAI API) | Build "suggest 3 tasks" button with OpenAI text-davinci/gpt-3.5 |
+| 6 | Polish UI | Add animations (Framer Motion), responsive layout, UX cleanup |
+| 7 | Deploy & Share | Deploy to Vercel, test user flow, write simple README |
 
-To learn more about Next.js, take a look at the following resources:
+## Tools/Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend:** Next.js + Tailwind CSS  
+- **UI Kit:** shadcn/ui (Buttons, Dialogs, Tabs, etc.)  
+- **Backend/DB:** Supabase (Auth, DB, Storage)  
+- **AI:** OpenAI API for task suggestions  
+- **Deployment:** Vercel (1-click for Next.js)  
+- **Animation:** Framer Motion (for small touches)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Pages
 
-## Deploy on Vercel
+- `/login` – Sign in / Sign up (Supabase)  
+- `/dashboard` – View and filter tasks  
+- `/task/[id]` – Task details and notes  
+- `/settings` – Toggle theme, logout, manage profile
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Takeaways (What will be learned)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Tailwind + shadcn/ui layout and theming  
+- Supabase full-stack usage (Auth, DB, Storage)  
+- RESTful client-side data fetching  
+- Basic integration with OpenAI  
+- How to ship a real web app in a week  
