@@ -32,7 +32,7 @@ export default function Dashboard() {
         {tasks.map((task) => (
           <div
             key={task.id}
-            className="receipt-card bg-[#FFFDF6] border border-[#CCCCCC] relative h-[457px] w-[251px] flex-shrink-0 shadow-md mt-10"
+            className="receipt-card bg-[#FFFDF6] border border-[#CCCCCC] relative h-[517px] w-[251px] flex-shrink-0 shadow-md mt-10"
           >
             <div
               id="editButtonArea"
@@ -56,13 +56,13 @@ export default function Dashboard() {
             {/* Description */}
             <div
               id="taskDescription"
-              className="text-sm mx-5 mt-2 line-clamp-5"
+              className="text-sm mx-5 mt-2 line-clamp-6"
             >
               {task.description}
             </div>
 
             {/* Status */}
-            <div className="flex flex-col gap-4 mt-5 mx-5 absolute top-[250px]">
+            <div className="flex flex-col gap-4 mt-5 mx-5 absolute top-[270px]">
               {["todo", "in-progress", "done"].map((status) => (
                 <div key={status}>
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -88,8 +88,12 @@ export default function Dashboard() {
 
             {/* Footer */}
 
-            <div className="flex mx-5 w-55 items-center justify-between absolute top-[400px]">
-              <div>C: {task.created_at}</div>
+            <div className="flex mx-5 w-55 items-center justify-between absolute top-[430px]">
+              <div className="flex flex-col">
+                <div>Created: {task.created_at}</div>
+                <div>Updated: {task.updated_at}</div>
+              </div>
+
               <button className="flex bg-none hover:bg-gray-200 active:bg-gray-100 h-10 w-10 justify-center items-center rounded-full cursor-pointer">
                 <img
                   src="../icons/delete_task_icon.svg"
@@ -104,12 +108,7 @@ export default function Dashboard() {
               className="absolute bottom-0 left-0 w-full h-4"
               viewBox="0 0 100 10"
               preserveAspectRatio="none"
-            >
-              <polygon
-                fill="#FFFDF6"
-                points="0,10 5,0 10,10 15,0 20,10 25,0 30,10 35,0 40,10 45,0 50,10 55,0 60,10 65,0 70,10 75,0 80,10 85,0 90,10 95,0 100,10"
-              />
-            </svg>
+            ></svg>
           </div>
         ))}
       </div>
