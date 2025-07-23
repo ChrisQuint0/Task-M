@@ -51,7 +51,7 @@ export function LoginForm({
       }
     } else {
       //Redirect to dashboard on successful login
-      router.push("http://localhost:3000");
+      router.push("/dashboard");
     }
     setLoading(false);
   };
