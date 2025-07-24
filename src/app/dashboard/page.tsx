@@ -35,17 +35,28 @@ import {
   useDeleteTask,
 } from "./functions";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import * as React from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const getColorClasses = (status: string) => {
   switch (status) {
     case "todo":
-      return "border-gray-500 peer-checked:bg-gray-500";
+      return "border-red-500 dark:border-red-600 peer-checked:bg-red-500 dark:peer-checked:bg-red-600";
       break;
     case "in_progress":
-      return "border-yellow-400 peer-checked:bg-yellow-400";
+      return "border-yellow-400 dark:border-yellow-500/80 peer-checked:bg-yellow-400 dark:peer-checked:bg-yellow-500/80";
       break;
     case "done":
-      return "border-green-500 peer-checked:bg-green-500";
+      return "border-green-500 dark:border-green-700 peer-checked:bg-green-500 dark:peer-checked:bg-green-700";
       break;
     default:
       return "";
@@ -55,14 +66,27 @@ const getColorClasses = (status: string) => {
 const getColorClassesForEdit = (status: string) => {
   switch (status) {
     case "todo":
-      return "bg-gray-500 hover:bg-gray-600";
+      return "bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700";
       break;
     case "in_progress":
-      return "bg-yellow-400 hover:bg-yellow-500";
+      return "bg-yellow-400 dark:bg-yellow-500/80 hover:bg-yellow-500 dark:hover:bg-yellow-500/90";
       break;
     case "done":
-      return "bg-green-500 hover:bg-green-600";
+      return "bg-green-500 dark:bg-green-700 hover:bg-green-600 dark:hover:bg-green-800";
       break;
+    default:
+      return "";
+  }
+};
+
+const getColorClassesForTicketBorder = (status: string) => {
+  switch (status) {
+    case "todo":
+      return "border-red-500 dark:border-red-600 dark:shadow-md dark:shadow-red-600";
+    case "in_progress":
+      return "border-yellow-400 dark:border-yellow-500/80 dark:shadow-md dark:shadow-yellow-500/80";
+    case "done":
+      return "border-green-500 dark:border-green-700 dark:shadow-md dark:shadow-green-700";
     default:
       return "";
   }
@@ -79,7 +103,9 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
   return (
     <div
       key={task.id}
-      className="receipt-card bg-[#FFFDF6] border border-[#CCCCCC] relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-10"
+      className={`${getColorClassesForTicketBorder(
+        statusMap[task.id] ?? task.status
+      )}  receipt-card bg-[#FFFDF6]/95 dark:bg-[#020618cc] border  relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-10 dark:text-white`}
     >
       <div
         className={`h-2 w-full ${getColorClassesForEdit(
@@ -125,6 +151,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
               placeholder="Update Description"
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
+              className="h-50"
             ></Textarea>
           </div>
 
@@ -157,7 +184,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
       {/* Description */}
       <div
         id="taskDescription"
-        className="text-sm mx-5 mt-2 whitespace-pre-line line-clamp-6"
+        className="text-sm mx-5 mt-2 whitespace-pre-line line-clamp-12"
       >
         {task.description}
       </div>
@@ -223,7 +250,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
               <img
                 src="../icons/delete_task_icon.svg"
                 alt=""
-                className="h-7 w-7"
+                className="h-7 w-7 dark:filter invert brightness-50"
               />
             </Button>
           </AlertDialogTrigger>
@@ -271,6 +298,8 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
 }
 
 export default function Dashboard() {
+  const { setTheme } = useTheme();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -278,18 +307,71 @@ export default function Dashboard() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { tasks, loading: fetchLoading, refetch } = useGetTasks();
   const [statusMap, setStatusMap] = useState<{ [taskId: string]: string }>({});
+  const [activeTab, setActiveTab] = useState("all");
 
   return (
     <div className="relative">
-      <div className="ticket-bar"></div>
+      <div className="bg-[#fafafa] w-full h-[22px] absolute left-0 w-screen top-[50px] dark:bg-background"></div>
+      <div className="ticket-bar dark:ticket-bar-dark"></div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <div className="flex justify-end mr-5 mt-12">
-          <DialogTrigger asChild>
-            <Button className="rounded-md cursor-pointer bg-gray-500 hover:bg-gray-600">
-              <img className="h-6" src="../icons/add_task_icon.svg"></img> Add
-              Task
-            </Button>
-          </DialogTrigger>
+        <div className="flex justify-between mr-5 mt-12">
+          <Tabs
+            defaultValue="all"
+            value={activeTab}
+            onValueChange={setActiveTab}
+          >
+            <TabsList className="ml-5">
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger
+                value="todo"
+                className="data-[state=active]:bg-red-500 dark:data-[state=active]:bg-red-700 data-[state=active]:text-white"
+              >
+                To Do
+              </TabsTrigger>
+              <TabsTrigger
+                value="in_progress"
+                className="data-[state=active]:bg-yellow-400 dark:data-[state=active]:bg-yellow-500/80 data-[state=active]:text-white"
+              >
+                In Progress
+              </TabsTrigger>
+              <TabsTrigger
+                value="done"
+                className="data-[state=active]:bg-green-500 dark:data-[state=active]:bg-green-600 data-[state=active]:text-white"
+              >
+                Done
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="flex justify-between gap-2">
+            <DialogTrigger asChild>
+              <Button className="rounded-md cursor-pointer bg-gray-500 hover:bg-gray-600 dark:text-white">
+                <img className="h-6" src="../icons/add_task_icon.svg"></img> Add
+                Task
+              </Button>
+            </DialogTrigger>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         <DialogContent className="sm:max-w-[500px]">
@@ -348,11 +430,20 @@ export default function Dashboard() {
           Wait for it...
         </div>
       ) : tasks.length > 0 ? (
-        <div className="overflow-x-auto flex gap-4 px-5 pb-5 -mt-4">
-          {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} refetch={refetch}></TaskCard>
-          ))}
-        </div>
+        (() => {
+          const filteredTasks = tasks.filter((task) => {
+            if (activeTab === "all") return true;
+            return task.status === activeTab;
+          });
+
+          return (
+            <div className="overflow-x-auto flex gap-4 px-5 pb-5 -mt-4">
+              {filteredTasks.map((task) => (
+                <TaskCard key={task.id} task={task} refetch={refetch} />
+              ))}
+            </div>
+          );
+        })()
       ) : (
         <div className="text-center text-gray-500 mt-20">
           Your to-do list is quieter than a coffee shop at 2 a.m.
