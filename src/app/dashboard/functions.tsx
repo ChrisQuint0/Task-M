@@ -44,7 +44,20 @@ export const useGetTasks = () => {
         toast.error(error.message);
         setTasks([]);
       } else {
-        setTasks(data || []);
+        const statusPriority = {
+          in_progress: 1,
+          todo: 2,
+          done: 3,
+        };
+
+        const sorted = (data || []).sort((a, b) => {
+          return (
+            statusPriority[a.status as "in_progress" | "todo" | "done"] -
+            statusPriority[b.status as "in_progress" | "todo" | "done"]
+          );
+        });
+
+        setTasks(sorted);
       }
     } catch (err) {
       console.error("Error fetching tasks:", err);
@@ -70,4 +83,56 @@ export const useGetTasks = () => {
     loading: loading || sessionLoading,
     refetch: fetchTasks,
   };
+};
+
+export const useUpdateTask = () => {
+  const session = useSession();
+
+  const updateTask = async (
+    taskId: string,
+    title: string,
+    description: string
+  ) => {
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({ title, description })
+      .eq("id", taskId)
+      .eq("user_id", session?.user?.id);
+
+    return { data, error };
+  };
+
+  return { updateTask };
+};
+
+export const useUpdateStatus = () => {
+  const session = useSession();
+
+  const updateStatus = async (taskId: string, status: string) => {
+    const { data, error } = await supabase
+      .from("tasks")
+      .update({ status })
+      .eq("id", taskId)
+      .eq("user_id", session?.user?.id);
+
+    return { data, error };
+  };
+
+  return { updateStatus };
+};
+
+export const useDeleteTask = () => {
+  const session = useSession();
+
+  const deleteTask = async (taskId: string) => {
+    const { data, error } = await supabase
+      .from("tasks")
+      .delete()
+      .eq("id", taskId)
+      .eq("user_id", session?.user?.id);
+
+    return { data, error };
+  };
+
+  return { deleteTask };
 };
