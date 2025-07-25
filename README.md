@@ -15,13 +15,13 @@ A simple but elegant productivity web app with:
 | Create/edit/delete task | Supabase DB (PostgreSQL) |
 | Tag tasks as “Todo”, “In Progress”, “Done” | UI logic + DB updates |
 | Filter/search tasks | Tailwind forms + query filters |
-| Dark mode toggle | shadcn/ui + Tailwind theming |
+| Dark mode toggle | Next.js Dark mode |
 
 ## Stretch Features
 
 | Feature | Tools |
 |--------|-------|
-| AI: Suggest 3 daily tasks | OpenAI API (text generation) |
+| AI: Breaks down high-level tasks into mini tasks | Gemini API (text generation) |
 | File attachment to tasks | Supabase Storage |
 | Pomodoro timer w/ animation | Framer Motion |
 | Realtime sync | Supabase Realtime (if time permits) |
@@ -34,7 +34,7 @@ A simple but elegant productivity web app with:
 | 2 | User Auth | Implement register/login/logout pages using Supabase |
 | 3 | Task CRUD | Create task DB in Supabase, build task list UI |
 | 4 | Task Filters + Dark Mode | Add filtering (by tag/status) and toggle theme |
-| 5 | Add AI (OpenAI API) | Build "suggest 3 tasks" button with OpenAI text-davinci/gpt-3.5 |
+| 5 | Add AI (Gemini API) | Build "suggest 3 tasks" button with Gemini API gemini-2.5-pro (Changed from OpenAI text-davinci/gpt-3.5) |
 | 6 | Polish UI | Add animations (Framer Motion), responsive layout, UX cleanup |
 | 7 | Deploy & Share | Deploy to Vercel, test user flow, write simple README |
 
@@ -43,7 +43,7 @@ A simple but elegant productivity web app with:
 - **Frontend:** Next.js + Tailwind CSS  
 - **UI Kit:** shadcn/ui (Buttons, Dialogs, Tabs, etc.)  
 - **Backend/DB:** Supabase (Auth, DB, Storage)  
-- **AI:** OpenAI API for task suggestions  
+- **AI:** Gemini API for task suggestions  
 - **Deployment:** Vercel (1-click for Next.js)  
 - **Animation:** Framer Motion (for small touches)
 
@@ -59,5 +59,5 @@ A simple but elegant productivity web app with:
 - Tailwind + shadcn/ui layout and theming  
 - Supabase full-stack usage (Auth, DB, Storage)  
 - RESTful client-side data fetching  
-- Basic integration with OpenAI  
+- Basic integration with Gemini API  
 - How to ship a real web app in a week  
