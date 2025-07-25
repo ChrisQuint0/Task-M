@@ -343,7 +343,48 @@ export default function Dashboard() {
             </TabsList>
           </Tabs>
 
-          <div className="flex justify-between gap-2">
+          <div className="flex gap-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="icon" variant="ghost">
+                  <img
+                    src="/icons/TiM_AI_Cat_Mascot.svg"
+                    alt=""
+                    className="bg-transparent"
+                  />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>
+                    <div className="flex gap-2 items-center">
+                      <img
+                        src="/icons/TiM_AI_Cat_Mascot.svg"
+                        className="h-15 w-15"
+                      />
+                      TiM the Task Cat is on the Case!
+                    </div>
+                  </DialogTitle>
+                  <DialogDescription>
+                    Struggling to get started? Just tell me what you’re working
+                    on and I’ll split it into smaller, doable steps. Easy peasy,
+                    Lemon... NVM I hate lemons.
+                  </DialogDescription>
+                </DialogHeader>
+
+                <Textarea
+                  placeholder="Tell me what you’re working on… I promise not to nap on it."
+                  className="max-h-50"
+                ></Textarea>
+
+                <DialogFooter>
+                  <Button className="cursor-pointer" type="button">
+                    Go, Task Cat, Go!
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <DialogTrigger asChild>
               <Button className="rounded-md cursor-pointer bg-gray-500 hover:bg-gray-600 dark:text-white">
                 <img className="h-6" src="../icons/add_task_icon.svg"></img> Add
