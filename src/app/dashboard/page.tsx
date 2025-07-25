@@ -46,6 +46,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { json } from "stream/consumers";
 
 const getColorClasses = (status: string) => {
   switch (status) {
@@ -217,8 +218,6 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
                   } else {
                     toast.error(error.message);
                   }
-
-                  await refetch();
                 }}
               />
               <div
@@ -237,7 +236,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
       <div className="flex mx-5 w-55 items-center justify-between absolute top-[510px]">
         <div className="flex flex-col">
           <div>Created: {new Date(task.created_at).toLocaleDateString()}</div>
-          <div>Updated: {new Date(task.created_at).toLocaleDateString()}</div>
+          <div>Updated: {new Date(task.updated_at).toLocaleDateString()}</div>
         </div>
 
         <AlertDialog>
@@ -305,9 +304,113 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const { addTask } = useAddTask();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [aiDialogContent, setAiDialogContent] = useState("");
+  const [aiDialogLoading, setAiDialogLoading] = useState(false);
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const { tasks, loading: fetchLoading, refetch } = useGetTasks();
   const [statusMap, setStatusMap] = useState<{ [taskId: string]: string }>({});
   const [activeTab, setActiveTab] = useState("all");
+
+  const handleGenerateTasksWithAI = async () => {
+    if (!aiDialogContent.trim()) {
+      toast.error(
+        "C’mon, type something! I swear I won’t sit on your keyboard… this time."
+      );
+      return;
+    }
+
+    setAiDialogLoading(true);
+
+    //Call Next.js API route
+    try {
+      const response = await fetch("/api/gemini", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          prompt: `Break down the following high-level task into a list of smaller, actionable, and specific sub-tasks. Provide the output as a JSON array of objects, where each object has a 'title', (string, max of 70 characters) and a 'description' (string). Do NOT include any additional text, markdown formatting outside the JSON, or explanations. Example: '[{"title": "Subtask 1", "description":"Details for subtask 1"}, {"title": "Subtask 2", "description": "Details for subtask 2"}]'
+          High-level task ${aiDialogContent}`,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "This one’s a tough nut to paw open. Maybe give it another go?"
+        );
+      }
+
+      let rawGeneratedText = data.generatedText;
+
+      //Remove markdown code, this is important, Gemini is losing its shit even though I said don't include any markdowns
+      if (rawGeneratedText.startsWith("```json\n")) {
+        rawGeneratedText = rawGeneratedText.substring("```json\n".length);
+      }
+      if (rawGeneratedText.endsWith("```")) {
+        rawGeneratedText = rawGeneratedText.substring(
+          0,
+          rawGeneratedText.length - "```".length
+        );
+      }
+      rawGeneratedText = rawGeneratedText.trim();
+      //Parse the AI's response
+      let generatedTasks;
+
+      try {
+        generatedTasks = JSON.parse(rawGeneratedText);
+
+        if (!Array.isArray(generatedTasks)) {
+          throw new Error(
+            "The AI coughed up… something. But it sure wasn’t a task list."
+          );
+        }
+      } catch (parseError) {
+        console.error("Failed to parse AI response:", parseError);
+        toast.error(
+          "Oops! TiM chased a laser instead of your task. Mind rephrasing it?"
+        );
+        return;
+      }
+
+      //Add to database
+      if (generatedTasks.length > 0) {
+        for (const task of generatedTasks) {
+          if (task.title && task.description) {
+            const { error } = await addTask(task.title, task.description);
+            if (error) {
+              console.error("Error adding task from AI: ", error);
+              toast.error(
+                `Failed to add task "${task.title}": ${error.toString()}`
+              );
+            }
+          }
+        }
+
+        toast.success(
+          "TiM successfully broke down your task! Paws-itively productive!"
+        );
+        await refetch();
+
+        setAiDialogContent("");
+        setAiDialogOpen(false);
+      } else {
+        toast.info(
+          "Even my feline genius has limits. Try a clearer task and I’ll pounce on it!"
+        );
+      }
+    } catch (error: any) {
+      console.error("Error during AI task generation: ", error);
+      toast.error(
+        error.message || "Something went wrong with TiM the Task Cat!"
+      );
+    } finally {
+      setAiDialogLoading(false);
+    }
+  };
 
   return (
     <div className="relative">
@@ -344,7 +447,8 @@ export default function Dashboard() {
           </Tabs>
 
           <div className="flex gap-2">
-            <Dialog>
+            {/* TiM the Task Cat */}
+            <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="icon" variant="ghost">
                   <img
@@ -375,16 +479,27 @@ export default function Dashboard() {
                 <Textarea
                   placeholder="Tell me what you’re working on… I promise not to nap on it."
                   className="max-h-50"
+                  value={aiDialogContent}
+                  onChange={(e) => setAiDialogContent(e.target.value)}
+                  disabled={aiDialogLoading}
                 ></Textarea>
 
                 <DialogFooter>
-                  <Button className="cursor-pointer" type="button">
-                    Go, Task Cat, Go!
+                  <Button
+                    className="cursor-pointer"
+                    type="button"
+                    onClick={handleGenerateTasksWithAI}
+                    disabled={aiDialogLoading}
+                  >
+                    {aiDialogLoading
+                      ? "Paw-cessing your task... please hold the tuna."
+                      : "Go, Task Cat, Go!"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
 
+            {/* Add Task Dialog Trigger */}
             <DialogTrigger asChild>
               <Button className="rounded-md cursor-pointer bg-gray-500 hover:bg-gray-600 dark:text-white">
                 <img className="h-6" src="../icons/add_task_icon.svg"></img> Add
@@ -467,7 +582,7 @@ export default function Dashboard() {
       </Dialog>
 
       {fetchLoading ? (
-        <div className="flex justify-center text-lg text-gray-500 mt-50">
+        <div className="flex justify-center text-lg text-white mt-50">
           Wait for it...
         </div>
       ) : tasks.length > 0 ? (

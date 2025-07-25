@@ -119,13 +119,16 @@
   body {
     @apply bg-background text-foreground dark:bg-background;
     background-image: url("/icons/cozy_background.png");
-    background-size: cover;
+    background-size: var(--background);
     background-repeat: no-repeat;
     background-position: center;
   }
 
   .dark body {
     background-image: url("/icons/cozy_background_dark.png");
+    background-size: var(--background);
+    background-repeat: no-repeat;
+    background-position: center;
   }
 }
 @layer components {

@@ -38,26 +38,26 @@ export const useGetTasks = () => {
         .from("tasks")
         .select("*")
         .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
       if (error) {
         toast.error(error.message);
         setTasks([]);
       } else {
-        const statusPriority = {
-          in_progress: 1,
-          todo: 2,
-          done: 3,
-        };
+        // const statusPriority = {
+        //   in_progress: 1,
+        //   todo: 2,
+        //   done: 3,
+        // };
 
-        const sorted = (data || []).sort((a, b) => {
-          return (
-            statusPriority[a.status as "in_progress" | "todo" | "done"] -
-            statusPriority[b.status as "in_progress" | "todo" | "done"]
-          );
-        });
+        // const sorted = (data || []).sort((a, b) => {
+        //   return (
+        //     statusPriority[a.status as "in_progress" | "todo" | "done"] -
+        //     statusPriority[b.status as "in_progress" | "todo" | "done"]
+        //   );
+        // });
 
-        setTasks(sorted);
+        setTasks(data || null);
       }
     } catch (err) {
       console.error("Error fetching tasks:", err);
