@@ -48,6 +48,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { json } from "stream/consumers";
 
+import { motion, AnimatePresence } from "framer-motion";
+
+// Determining the color fo the radio button
 const getColorClasses = (status: string) => {
   switch (status) {
     case "todo":
@@ -64,6 +67,7 @@ const getColorClasses = (status: string) => {
   }
 };
 
+// For edit button and the color indicator at the top of the ticker
 const getColorClassesForEdit = (status: string) => {
   switch (status) {
     case "todo":
@@ -80,6 +84,7 @@ const getColorClassesForEdit = (status: string) => {
   }
 };
 
+// For the border of the ticket as well as the shadow
 const getColorClassesForTicketBorder = (status: string) => {
   switch (status) {
     case "todo":
@@ -93,6 +98,7 @@ const getColorClassesForTicketBorder = (status: string) => {
   }
 };
 
+// Function to render the Task Card
 function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description);
@@ -100,19 +106,47 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
   const { updateTask } = useUpdateTask();
   const { updateStatus } = useUpdateStatus();
   const { deleteTask } = useDeleteTask();
+  const [isBeingDeleted, setIsBeingDeleted] = useState(false);
 
   return (
-    <div
+    <motion.div
       key={task.id}
       className={`${getColorClassesForTicketBorder(
         statusMap[task.id] ?? task.status
-      )}  receipt-card bg-[#FFFDF6]/95 dark:bg-[#020618cc] border  relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-10 dark:text-white`}
+      )}  receipt-card bg-[#FFFDF6]/95 dark:bg-[#020618cc] border  relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-13 sm:mt-10 md:mt-24 dark:text-white z-10`}
+      initial={{ opacity: 0, y: -20, rotateZ: -2 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        rotateZ: 0,
+        ...(isBeingDeleted && {
+          x: [0, -3, 3, -3, 3, 0], // More pronounced shake
+          y: [0, -2, 2, -2, 2, 0], // Add vertical shake too
+          transition: { duration: 0.4 },
+        }),
+      }}
+      exit={{
+        opacity: 0,
+        y: 400, // Much larger drop distance
+        x: Math.random() * 60 - 30, // More horizontal drift
+        rotateZ: Math.random() * 45 - 22.5, // More dramatic rotation
+        scale: 0.6, // Shrink more as it falls away
+        zIndex: 50, // Bring to front during animation
+        transition: {
+          duration: 1.2, // Slower fall for more visible effect
+          ease: [0.25, 0.46, 0.45, 0.94],
+          opacity: { duration: 0.8, delay: 0.4 }, // Longer fade delay
+        },
+      }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      layout
     >
       <div
         className={`h-2 w-full ${getColorClassesForEdit(
           statusMap[task.id] ?? task.status
         )}`}
-      ></div>
+      ></div>{" "}
+      {/*Color indicator at the top of the ticket*/}
       <Dialog>
         <div id="editButtonArea" className={`flex mb-0 justify-end mr-2 mt-2`}>
           <DialogTrigger asChild>
@@ -131,6 +165,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
           </DialogTrigger>
         </div>
 
+        {/* Dialog content for editing */}
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit</DialogTitle>
@@ -189,7 +224,6 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
       >
         {task.description}
       </div>
-
       {/* Status */}
       <div className="flex flex-col gap-4 mt-5 mx-5 absolute top-[350px]">
         {["todo", "in_progress", "done"].map((status) => (
@@ -270,14 +304,19 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
               <AlertDialogAction
                 className="bg-destructive hover:bg-red-500 cursor-pointer"
                 onClick={async () => {
-                  const { error } = await deleteTask(task.id);
-                  if (!error) {
-                    toast.success("Task deleted successfully!");
-                  } else {
-                    toast.error(error.message);
-                  }
+                  setIsBeingDeleted(true); // Trigger shake animation
 
-                  await refetch();
+                  // Small delay to show the shake before deletion
+                  setTimeout(async () => {
+                    const { error } = await deleteTask(task.id);
+                    if (!error) {
+                      toast.success("Task deleted successfully!");
+                      refetch(); // This will cause the component to unmount, triggering exit animation
+                    } else {
+                      toast.error(error.message);
+                      setIsBeingDeleted(false); // Reset if deletion fails
+                    }
+                  }, 300);
                 }}
               >
                 Delete
@@ -292,7 +331,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
         viewBox="0 0 100 10"
         preserveAspectRatio="none"
       ></svg>
-    </div>
+    </motion.div>
   );
 }
 
@@ -314,7 +353,7 @@ export default function Dashboard() {
   const handleGenerateTasksWithAI = async () => {
     if (!aiDialogContent.trim()) {
       toast.error(
-        "C’mon, type something! I swear I won’t sit on your keyboard… this time."
+        "C'mon, type something! I swear I won't sit on your keyboard… this time."
       );
       return;
     }
@@ -412,16 +451,26 @@ export default function Dashboard() {
     }
   };
 
+  const filteredTasks = tasks.filter((task) => {
+    if (activeTab === "all") return true;
+    return task.status === activeTab;
+  });
+
   return (
     <div className="relative">
-      <div className="bg-[#fafafa] w-full h-[22px] absolute left-0 w-screen top-[50px] dark:bg-background"></div>
+      {/*Backdrop for the ticket bar to make it more visible */}
+      <div className="bg-[#fafafa] w-full h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px]  md:top-[110px] dark:bg-background"></div>{" "}
+      {/* Ticket Bar */}
       <div className="ticket-bar dark:ticket-bar-dark"></div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <div className="flex justify-between mr-5 mt-12">
+        {/* Main Container for the controls */}
+        <div className="flex flex-col gap-2 items-center sm:flex-row sm:justify-between sm:mr-5 mt-12">
+          {/* Filter Tabs */}
           <Tabs
             defaultValue="all"
             value={activeTab}
             onValueChange={setActiveTab}
+            className="-mt-5 sm:mt-0"
           >
             <TabsList className="ml-5">
               <TabsTrigger value="all">All</TabsTrigger>
@@ -446,7 +495,9 @@ export default function Dashboard() {
             </TabsList>
           </Tabs>
 
-          <div className="flex gap-2">
+          <div className="flex gap-4 ml-3">
+            {" "}
+            {/* Main Container for the left side of the controls */}
             {/* TiM the Task Cat */}
             <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
               <DialogTrigger asChild>
@@ -498,7 +549,6 @@ export default function Dashboard() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-
             {/* Add Task Dialog Trigger */}
             <DialogTrigger asChild>
               <Button className="rounded-md cursor-pointer bg-gray-500 hover:bg-gray-600 dark:text-white">
@@ -506,7 +556,6 @@ export default function Dashboard() {
                 Task
               </Button>
             </DialogTrigger>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -580,23 +629,22 @@ export default function Dashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
       {fetchLoading ? (
         <div className="flex justify-center text-lg text-white mt-50">
           Wait for it...
         </div>
-      ) : tasks.length > 0 ? (
+      ) : filteredTasks.length > 0 ? (
         (() => {
-          const filteredTasks = tasks.filter((task) => {
-            if (activeTab === "all") return true;
-            return task.status === activeTab;
-          });
-
           return (
-            <div className="overflow-x-auto flex gap-4 px-5 pb-5 -mt-4">
-              {filteredTasks.map((task) => (
-                <TaskCard key={task.id} task={task} refetch={refetch} />
-              ))}
+            <div
+              className="overflow-x-auto overflow-y-visible flex gap-4 px-5 pb-5 -mt-4"
+              style={{ minHeight: "650px" }}
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredTasks.map((task) => (
+                  <TaskCard key={task.id} task={task} refetch={refetch} />
+                ))}
+              </AnimatePresence>
             </div>
           );
         })()

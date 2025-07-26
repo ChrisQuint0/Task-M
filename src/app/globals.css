@@ -119,21 +119,33 @@
   body {
     @apply bg-background text-foreground dark:bg-background;
     background-image: url("/icons/cozy_background.png");
-    background-size: var(--background);
+    background-size: inherit;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: left center;
   }
 
   .dark body {
     background-image: url("/icons/cozy_background_dark.png");
-    background-size: var(--background);
+    background-size: inherit;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: right;
+  }
+
+  @media ((min-width: 640px)) {
+    body {
+      background-size: cover;
+      background-position: inherit;
+    }
+
+    .dark body {
+      background-size: cover;
+      background-position: inherit;
+    }
   }
 }
 @layer components {
   .ticket-bar {
-    @apply w-full h-[22px] absolute left-0 w-screen top-[50px] shadow-[inset_0px_4px_4px_rgba(0,0,0,0.25),0px_4px_4px_rgba(0,0,0,0.25)];
+    @apply w-full h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px]  md:top-[110px] shadow-[inset_0px_4px_4px_rgba(0,0,0,0.25),0px_4px_4px_rgba(0,0,0,0.25)];
     background: linear-gradient(
       180deg,
       rgba(224, 224, 224, 0) 0%,
@@ -144,7 +156,7 @@
   }
 
   .dark .ticket-bar {
-    @apply w-full h-[22px] absolute left-0 w-screen top-[50px] shadow-[inset_0px_4px_6px_rgba(255,255,255,0.3),0px_4px_8px_rgba(255,255,255,0.25)];
+    @apply w-full h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px] md:top-[110px] shadow-[inset_0px_4px_6px_rgba(255,255,255,0.3),0px_4px_8px_rgba(255,255,255,0.25)];
 
     background: linear-gradient(
       180deg,
