@@ -66,7 +66,6 @@ export const useGetTasks = () => {
       setLoading(false);
     }
   }, [session?.user?.id]);
-
   useEffect(() => {
     if (!sessionLoading) {
       if (session?.user?.id) {

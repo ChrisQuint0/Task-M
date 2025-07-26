@@ -38,7 +38,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import * as React from "react";
-import { Moon, Sun } from "lucide-react";
+import { Moon, RectangleHorizontal, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -106,40 +106,35 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
   const { updateTask } = useUpdateTask();
   const { updateStatus } = useUpdateStatus();
   const { deleteTask } = useDeleteTask();
-  const [isBeingDeleted, setIsBeingDeleted] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [dropped, setDropped] = useState(false);
+
+  const handlePermanentDelete = async () => {
+    const { error } = await deleteTask(task.id);
+    if (!error) {
+      toast.success("Task deleted successfully!");
+      setDropped(true);
+
+      setTimeout(refetch, 1000);
+    } else {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <motion.div
       key={task.id}
+      layout
+      initial={{ opacity: 1, y: 0 }}
+      animate={dropped ? { opacity: 0, y: 200 } : { y: 0, x: 0, opacity: 1 }}
+      transition={
+        dropped
+          ? { duration: 0.3, ease: "easeOut" }
+          : { duration: 0.3, ease: "easeIn" }
+      }
       className={`${getColorClassesForTicketBorder(
         statusMap[task.id] ?? task.status
-      )}  receipt-card bg-[#FFFDF6]/95 dark:bg-[#020618cc] border  relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-13 sm:mt-10 md:mt-24 dark:text-white z-10`}
-      initial={{ opacity: 0, y: -20, rotateZ: -2 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        rotateZ: 0,
-        ...(isBeingDeleted && {
-          x: [0, -3, 3, -3, 3, 0], // More pronounced shake
-          y: [0, -2, 2, -2, 2, 0], // Add vertical shake too
-          transition: { duration: 0.4 },
-        }),
-      }}
-      exit={{
-        opacity: 0,
-        y: 400, // Much larger drop distance
-        x: Math.random() * 60 - 30, // More horizontal drift
-        rotateZ: Math.random() * 45 - 22.5, // More dramatic rotation
-        scale: 0.6, // Shrink more as it falls away
-        zIndex: 50, // Bring to front during animation
-        transition: {
-          duration: 1.2, // Slower fall for more visible effect
-          ease: [0.25, 0.46, 0.45, 0.94],
-          opacity: { duration: 0.8, delay: 0.4 }, // Longer fade delay
-        },
-      }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      layout
+      )}  receipt-card bg-[#FFFDF6]/95 dark:bg-[#020618cc] border relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-13 sm:mt-10 md:mt-10 dark:text-white`}
     >
       <div
         className={`h-2 w-full ${getColorClassesForEdit(
@@ -283,7 +278,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
               <img
                 src="../icons/delete_task_icon.svg"
                 alt=""
-                className="h-7 w-7 dark:filter invert brightness-50"
+                className="h-7 w-7 dark:filter dark:invert dark:brightness-50"
               />
             </Button>
           </AlertDialogTrigger>
@@ -303,21 +298,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
               </AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive hover:bg-red-500 cursor-pointer"
-                onClick={async () => {
-                  setIsBeingDeleted(true); // Trigger shake animation
-
-                  // Small delay to show the shake before deletion
-                  setTimeout(async () => {
-                    const { error } = await deleteTask(task.id);
-                    if (!error) {
-                      toast.success("Task deleted successfully!");
-                      refetch(); // This will cause the component to unmount, triggering exit animation
-                    } else {
-                      toast.error(error.message);
-                      setIsBeingDeleted(false); // Reset if deletion fails
-                    }
-                  }, 300);
-                }}
+                onClick={handlePermanentDelete}
               >
                 Delete
               </AlertDialogAction>
@@ -459,12 +440,12 @@ export default function Dashboard() {
   return (
     <div className="relative">
       {/*Backdrop for the ticket bar to make it more visible */}
-      <div className="bg-[#fafafa] w-full h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px]  md:top-[110px] dark:bg-background"></div>{" "}
+      <div className="bg-[#fafafa] h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px] dark:bg-background"></div>{" "}
       {/* Ticket Bar */}
       <div className="ticket-bar dark:ticket-bar-dark"></div>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         {/* Main Container for the controls */}
-        <div className="flex flex-col gap-2 items-center sm:flex-row sm:justify-between sm:mr-5 mt-12">
+        <div className="flex flex-col gap-2 items-center sm:flex-row sm:justify-between sm:mr-5 mt-12 sm:mt-6">
           {/* Filter Tabs */}
           <Tabs
             defaultValue="all"
@@ -649,7 +630,7 @@ export default function Dashboard() {
           );
         })()
       ) : (
-        <div className="text-center text-gray-500 mt-20">
+        <div className="text-sm sm:text-lg text-center text-white bg-black/50 dark:bg-black/0 mt-25">
           Your to-do list is quieter than a coffee shop at 2 a.m.
         </div>
       )}

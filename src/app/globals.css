@@ -117,35 +117,47 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground dark:bg-background;
+    @apply bg-[#d39552] text-foreground dark:bg-background;
     background-image: url("/icons/cozy_background.png");
     background-size: inherit;
     background-repeat: no-repeat;
-    background-position: left center;
+    background-position: center;
   }
 
   .dark body {
     background-image: url("/icons/cozy_background_dark.png");
     background-size: inherit;
     background-repeat: no-repeat;
-    background-position: right;
+    background-position: center;
   }
 
-  @media ((min-width: 640px)) {
+  @media ((min-width: 640px) and (max-width: 767px)) {
     body {
-      background-size: cover;
       background-position: inherit;
+      background-size: cover;
     }
 
     .dark body {
-      background-size: cover;
       background-position: inherit;
+      background-size: cover;
+    }
+  }
+
+  @media ((min-width: 1025px)) {
+    body {
+      background-position: inherit;
+      background-size: cover;
+    }
+
+    .dark body {
+      background-position: inherit;
+      background-size: cover;
     }
   }
 }
 @layer components {
   .ticket-bar {
-    @apply w-full h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px]  md:top-[110px] shadow-[inset_0px_4px_4px_rgba(0,0,0,0.25),0px_4px_4px_rgba(0,0,0,0.25)];
+    @apply h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px] shadow-[inset_0px_4px_4px_rgba(0,0,0,0.25),0px_4px_4px_rgba(0,0,0,0.25)];
     background: linear-gradient(
       180deg,
       rgba(224, 224, 224, 0) 0%,
@@ -156,7 +168,7 @@
   }
 
   .dark .ticket-bar {
-    @apply w-full h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px] md:top-[110px] shadow-[inset_0px_4px_6px_rgba(255,255,255,0.3),0px_4px_8px_rgba(255,255,255,0.25)];
+    @apply w-full h-[22px] absolute left-0 w-screen top-[90px] sm:top-[50px] shadow-[inset_0px_4px_6px_rgba(255,255,255,0.3),0px_4px_8px_rgba(255,255,255,0.25)];
 
     background: linear-gradient(
       180deg,
