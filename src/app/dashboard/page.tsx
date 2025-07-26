@@ -126,7 +126,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
       key={task.id}
       layout
       initial={{ opacity: 1, y: 0 }}
-      animate={dropped ? { opacity: 0, y: 200 } : { y: 0, x: 0, opacity: 1 }}
+      animate={dropped ? { opacity: 0, y: 200 } : { y: 0, opacity: 1 }}
       transition={
         dropped
           ? { duration: 0.3, ease: "easeOut" }
@@ -134,7 +134,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
       }
       className={`${getColorClassesForTicketBorder(
         statusMap[task.id] ?? task.status
-      )}  receipt-card bg-[#FFFDF6]/95 dark:bg-[#020618cc] border relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-13 sm:mt-10 md:mt-10 dark:text-white`}
+      )}  receipt-card bg-[#FFFDF6]/90 dark:bg-[#020618cc] border relative h-[600px] w-[251px] flex-shrink-0 shadow-md mt-13 sm:mt-10 md:mt-10 dark:text-white`}
     >
       <div
         className={`h-2 w-full ${getColorClassesForEdit(
