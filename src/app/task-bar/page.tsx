@@ -1,6 +1,20 @@
 "use client";
 
+//General Button
 import { Button } from "@/components/ui/button";
+
+//General input
+import { Input } from "@/components/ui/input";
+
+//General Textarea
+import { Textarea } from "@/components/ui/textarea";
+
+//General label
+import { Label } from "@/components/ui/label";
+
+import { useState, useEffect } from "react";
+
+// For the add task and update task forms
 import {
   Dialog,
   DialogContent,
@@ -11,6 +25,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
+// For the delete confirmation
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,10 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { useState } from "react";
+//Functions from functions.tsx
 import {
   useAddTask,
   useGetTasks,
@@ -34,11 +46,16 @@ import {
   useUpdateStatus,
   useDeleteTask,
 } from "./functions";
-import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+//For user confirmations and error messages
+import { toast } from "sonner";
+
+//For the filter (Todo, In Progress, Done)
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+//For toggle theme
 import * as React from "react";
-import { Moon, RectangleHorizontal, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
   DropdownMenu,
@@ -46,9 +63,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { json } from "stream/consumers";
 
+//For animation
 import { motion, AnimatePresence } from "framer-motion";
+
+//For Logout
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 // Determining the color fo the radio button
 const getColorClasses = (status: string) => {
@@ -318,6 +339,39 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
 
 export default function Dashboard() {
   const { setTheme } = useTheme();
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        //No user found, redirect to login
+        router.push("/login");
+      }
+    };
+
+    checkUser();
+
+    //Real time reactivity
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_OUT") {
+          toast.error("You've been signed out. Please log in");
+          router.push("/login");
+        } else if (event === "SIGNED_IN" && session?.user) {
+          //User signed in, do nothing or refetch tasks
+          console.log("User signed in: ", session.user.id);
+        }
+      }
+    );
+
+    return () => {
+      //Clean up the subscription when the component unmounts
+      authListener.subscription.unsubscribe();
+    };
+  }, [router]);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -330,6 +384,18 @@ export default function Dashboard() {
   const { tasks, loading: fetchLoading, refetch } = useGetTasks();
   const [statusMap, setStatusMap] = useState<{ [taskId: string]: string }>({});
   const [activeTab, setActiveTab] = useState("all");
+
+  //Handle the logout
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      toast.success("You've logged out. I'll be napping until you return");
+      router.push("/login");
+    } else {
+      toast.error("I tried, but the logout didn't work");
+      console.error(`Logout failed: ${error.message}`);
+    }
+  };
 
   const handleGenerateTasksWithAI = async () => {
     if (!aiDialogContent.trim()) {
@@ -446,35 +512,68 @@ export default function Dashboard() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         {/* Main Container for the controls */}
         <div className="flex flex-col gap-2 items-center sm:flex-row sm:justify-between sm:mr-5 mt-12 sm:mt-6">
-          {/* Filter Tabs */}
-          <Tabs
-            defaultValue="all"
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="-mt-5 sm:mt-0"
-          >
-            <TabsList className="ml-5">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger
-                value="todo"
-                className="data-[state=active]:bg-red-500 dark:data-[state=active]:bg-red-700 data-[state=active]:text-white"
-              >
-                To Do
-              </TabsTrigger>
-              <TabsTrigger
-                value="in_progress"
-                className="data-[state=active]:bg-yellow-400 dark:data-[state=active]:bg-yellow-500/80 data-[state=active]:text-white"
-              >
-                In Progress
-              </TabsTrigger>
-              <TabsTrigger
-                value="done"
-                className="data-[state=active]:bg-green-500 dark:data-[state=active]:bg-green-600 data-[state=active]:text-white"
-              >
-                Done
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex items-center">
+            {/* Filter Tabs */}
+            <Tabs
+              defaultValue="all"
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="-mt-5 sm:mt-0"
+            >
+              <TabsList className="ml-5">
+                <TabsTrigger value="all">All</TabsTrigger>
+                <TabsTrigger
+                  value="todo"
+                  className="data-[state=active]:bg-red-500 dark:data-[state=active]:bg-red-700 data-[state=active]:text-white"
+                >
+                  To Do
+                </TabsTrigger>
+                <TabsTrigger
+                  value="in_progress"
+                  className="data-[state=active]:bg-yellow-400 dark:data-[state=active]:bg-yellow-500/80 data-[state=active]:text-white"
+                >
+                  In Progress
+                </TabsTrigger>
+                <TabsTrigger
+                  value="done"
+                  className="data-[state=active]:bg-green-500 dark:data-[state=active]:bg-green-600 data-[state=active]:text-white"
+                >
+                  Done
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className=" bg-gray-500  hover:bg-gray-600 dark:text-white cursor-pointer ml-5 active:bg-gray-500">
+                  Logout
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    Before you go… are you absolutely, positively sure?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    All your tasks will be waiting patiently for your return.
+                    Well...If there's any.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="cursor-pointer">
+                    Cancel
+                  </AlertDialogCancel>
+
+                  <AlertDialogAction
+                    className="bg-red-500 hover:bg-red-700 dark:hover:bg-red-600 cursor-pointer text-white"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
 
           <div className="flex gap-4 ml-3">
             {" "}

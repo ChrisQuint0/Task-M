@@ -13,11 +13,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react"; // For managing component state
+import { useState, useEffect } from "react"; // For managing component state
 import { supabase } from "@/lib/supabase"; // Supabase client
 import { useRouter } from "next/navigation"; // userRouter for navigation
-import { isIP } from "net";
-import { Divide } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -35,6 +33,41 @@ export function LoginForm({
 
   const router = useRouter();
 
+  useEffect(() => {
+    const checkUserSession = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          router.replace("/task-bar");
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error checking user session: ", error);
+        setError("Failed to verify session. Please try again.");
+        setLoading(false);
+      }
+    };
+
+    checkUserSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          //User just signed in
+          router.replace("/task-bar");
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [router]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -51,7 +84,7 @@ export function LoginForm({
       }
     } else {
       //Redirect to dashboard on successful login
-      router.push("/dashboard");
+      router.push("/task-bar");
     }
     setLoading(false);
   };
@@ -111,9 +144,18 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
+          <a
+            href="#"
+            className="flex items-center gap-2 justify-center font-medium text-2xl mb-5"
+          >
+            <div className="">
+              <img src="/icons/icon.png" alt="" className="h-12 w-12" />
+            </div>
+            TaskM
+          </a>
           {showSuccessMessage && (
-            <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-2">
-              <p className="text-black-800 text-sm font-medium">
+            <div className="bg-green-50 dark:bg-green-700 border border-green-200 dark:border-green-800 rounded-md p-3 mb-2">
+              <p className="text-black-800 dark:text-sm font-medium">
                 Account request processed
               </p>
               <p className="text-black-700 text-xs mt-1">
@@ -212,7 +254,11 @@ export function LoginForm({
                     ? "Sign Up"
                     : "Login"}
                 </Button>
-                <Button variant="outline" className="w-full" disabled={loading}>
+                <Button
+                  variant="outline"
+                  className="w-full hidden"
+                  disabled={loading}
+                >
                   Login with Google
                 </Button>
               </div>
