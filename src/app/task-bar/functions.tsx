@@ -4,6 +4,16 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 import { useEffect, useState, useCallback } from "react";
 
+interface Task {
+  id: string;
+  user_id: string;
+  title: string;
+  description: string;
+  status: "todo" | "in_progress" | "done";
+  created_at: string;
+  updated_at: string;
+}
+
 export const useAddTask = () => {
   const session = useSession();
   const addTask = async (title: string, description: string) => {
@@ -25,7 +35,7 @@ import { useSessionContext } from "@supabase/auth-helpers-react";
 
 export const useGetTasks = () => {
   const { session, isLoading: sessionLoading } = useSessionContext();
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchTasks = useCallback(async () => {

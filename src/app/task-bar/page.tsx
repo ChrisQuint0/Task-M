@@ -1,3 +1,5 @@
+//app/task-bar/page.tsx
+
 "use client";
 
 //General Button
@@ -119,15 +121,18 @@ const getColorClassesForTicketBorder = (status: string) => {
   }
 };
 
+import { Task } from "./functions";
+
+import Image from "next/image";
+
 // Function to render the Task Card
-function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
+function TaskCard({ task, refetch }: { task: Task; refetch: () => void }) {
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description);
   const [statusMap, setStatusMap] = useState<{ [taskId: string]: string }>({});
   const { updateTask } = useUpdateTask();
   const { updateStatus } = useUpdateStatus();
   const { deleteTask } = useDeleteTask();
-  const [isDeleting, setIsDeleting] = useState(false);
   const [dropped, setDropped] = useState(false);
 
   const handlePermanentDelete = async () => {
@@ -172,11 +177,13 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
               )}`}
             >
               {" "}
-              <img
+              <Image
                 className="absolute h-4"
                 src="../icons/edit_task_icon.svg"
                 alt=""
-              ></img>
+                height={60}
+                width={60}
+              ></Image>
             </Button>
           </DialogTrigger>
         </div>
@@ -296,9 +303,11 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
               size="icon"
               className="rounded-full cursor-pointer active:bg-gray-200"
             >
-              <img
+              <Image
                 src="../icons/delete_task_icon.svg"
                 alt=""
+                height={60}
+                width={60}
                 className="h-7 w-7 dark:filter dark:invert dark:brightness-50"
               />
             </Button>
@@ -306,7 +315,7 @@ function TaskCard({ task, refetch }: { task: any; refetch: () => void }) {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
-                Are you sure you want to delete "{task.title}"?
+                Are you sure you want to delete &quot;{task.title}&quot;?
               </AlertDialogTitle>
               <AlertDialogDescription>
                 This action cannot be undone. This will permanently delete the
@@ -382,7 +391,6 @@ export default function Dashboard() {
   const [aiDialogLoading, setAiDialogLoading] = useState(false);
   const [aiDialogOpen, setAiDialogOpen] = useState(false);
   const { tasks, loading: fetchLoading, refetch } = useGetTasks();
-  const [statusMap, setStatusMap] = useState<{ [taskId: string]: string }>({});
   const [activeTab, setActiveTab] = useState("all");
 
   //Handle the logout
@@ -485,14 +493,12 @@ export default function Dashboard() {
         setAiDialogOpen(false);
       } else {
         toast.info(
-          "Even my feline genius has limits. Try a clearer task and I’ll pounce on it!"
+          "Even my feline genius has limits. Try a clearer task and I'll pounce on it!"
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error during AI task generation: ", error);
-      toast.error(
-        error.message || "Something went wrong with TiM the Task Cat!"
-      );
+      toast.error("Something went wrong with TiM the Task Cat!");
     } finally {
       setAiDialogLoading(false);
     }
@@ -556,7 +562,7 @@ export default function Dashboard() {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     All your tasks will be waiting patiently for your return.
-                    Well...If there's any.
+                    Well...If there&apos;s any.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -582,9 +588,11 @@ export default function Dashboard() {
             <Dialog open={aiDialogOpen} onOpenChange={setAiDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="icon" variant="ghost">
-                  <img
+                  <Image
                     src="/icons/TiM_AI_Cat_Mascot.svg"
                     alt=""
+                    width={60}
+                    height={60}
                     className="bg-transparent"
                   />
                 </Button>
@@ -593,8 +601,11 @@ export default function Dashboard() {
                 <DialogHeader>
                   <DialogTitle>
                     <div className="flex gap-2 items-center">
-                      <img
+                      <Image
                         src="/icons/TiM_AI_Cat_Mascot.svg"
+                        alt=""
+                        width={60}
+                        height={60}
                         className="h-15 w-15"
                       />
                       TiM the Task Cat is on the Case!
@@ -632,8 +643,14 @@ export default function Dashboard() {
             {/* Add Task Dialog Trigger */}
             <DialogTrigger asChild>
               <Button className="rounded-md cursor-pointer bg-gray-500 hover:bg-gray-600 dark:text-white">
-                <img className="h-6" src="../icons/add_task_icon.svg"></img> Add
-                Task
+                <Image
+                  className="h-6"
+                  src="../icons/add_task_icon.svg"
+                  alt=""
+                  height={60}
+                  width={60}
+                ></Image>{" "}
+                Add Task
               </Button>
             </DialogTrigger>
             <DropdownMenu>
