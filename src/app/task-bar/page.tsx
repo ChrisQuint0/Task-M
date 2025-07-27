@@ -526,7 +526,7 @@ export default function Dashboard() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         {/* Main Container for the controls */}
         <div className="flex flex-col gap-2 items-center sm:flex-row sm:justify-between sm:mr-5 mt-12 sm:mt-6">
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             {/* Filter Tabs */}
             <Tabs
               defaultValue="all"
@@ -559,7 +559,7 @@ export default function Dashboard() {
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button className=" bg-gray-500  hover:bg-gray-600 dark:text-white cursor-pointer ml-5 active:bg-gray-500">
+                <Button className="bg-gray-500  hover:bg-gray-600 dark:text-white cursor-pointer -mt-5 sm:mt-0 active:bg-gray-500">
                   Logout
                 </Button>
               </AlertDialogTrigger>
@@ -656,7 +656,7 @@ export default function Dashboard() {
                   src="../icons/add_task_icon.svg"
                   alt=""
                   height={60}
-                  width={60}
+                  width={20}
                 ></Image>{" "}
                 Add Task
               </Button>
