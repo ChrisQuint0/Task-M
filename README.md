@@ -80,3 +80,8 @@
 
   <h4 style="text-align: end">Developed by Christopher A. Quinto</h4>
 </div>
+
+<h2>Photo Background Credits</h2>
+<a href="https://wall.alphacoders.com/big.php?i=1383143" target="_blank">Cozy Lofi Home Office: 4K Ultra HD Wallpaper by robokoboto</a>
+
+<a href="https://www.beforesunset.ai/post/lofi-wallpaper-for-your-study-routine" target="_blank">Cozy Dark Backgroudn: Recorded by Moewalls.com</a>
