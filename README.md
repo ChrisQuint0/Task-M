@@ -1,63 +1,82 @@
-# One-Week Project: “TaskM” - Task Manager with Auth, UI, DB, and AI
+<div style="display: flex; align-items: center; gap: 0.5rem;">
+  <img src="task_m_logo_spinning.gif" height="70">
+  <h2 style="margin: 0;">“TaskM” - Task Manager / ToDo Web App with Auth, UI, DB, and AI</h2>
+</div>
 
-A simple but elegant productivity web app with:
-- User authentication (Supabase)
-- Task creation, editing, and filtering
-- AI-assisted task suggestions
-- Modern UI (Tailwind + shadcn/ui)
-- Hosted online (Vercel)
+<div>
+  <p style="margin-top: 2px">TaskM is a simple, elegant task manager built with user authentication, a modern UI, AI-assisted task suggestions, and a connected database, all deployed and ready to use.</p>
+</div>
 
-## Features (Planned for 7 Days)
+<a href="https://task-m-three.vercel.app" target="_blank" style="
+  display: inline-block;
+  padding: 0.5em 1em;
+  background-color: #1e293d;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-family: sans-serif;
+">Try TaskM's Live Demo →</a>
 
-| Feature | Tools to Learn/Use |
-|--------|--------------------|
-| Sign up / Sign in | Supabase Auth + shadcn/ui Inputs/Dialogs |
-| Create/edit/delete task | Supabase DB (PostgreSQL) |
-| Tag tasks as “Todo”, “In Progress”, “Done” | UI logic + DB updates |
-| Filter/search tasks | Tailwind forms + query filters |
-| Dark mode toggle | Next.js Dark mode |
+<div>
+  <h3>Built with:</h3>
+  <div style="display:flex; justify-content: center; align-items: center; gap: 10px;">
+    <img src="next_logo_spinning.gif" height="70">
+    <img src="tailwind_logo_spinning.gif" height="70">
+    <img src="shadcn_logo_spinning.gif" height="70">
+    <img src="supabase_logo_spinning.gif" height="70">
+    <img src="gemini_logo_spinning.gif" height="70">
+    <img src="vercel_logo_spinning.gif" height="70">
+    <img src="framer_logo_spinning.gif" height="70">
 
-## Stretch Features
+  </div>
+</div>
 
-| Feature | Tools |
-|--------|-------|
-| AI: Breaks down high-level tasks into mini tasks | Gemini API (text generation) |
-| File attachment to tasks | Supabase Storage |
-| Pomodoro timer w/ animation | Framer Motion |
-| Realtime sync | Supabase Realtime (if time permits) |
+</br>
 
-## Day-by-Day Plan (1-Week Sprint)
+- **Next.js** + **Tailwind CSS** - frontend framework and utility-first styling
+- **shadcn/ui** - modern component library
+- **Supabase** - auth, database, and storage
+- **Gemini API** - for AI-based task breakdowns
+- **Framer Motion** - for UI animations
+- **Vercel** - for fast, production-grade deployment
 
-| Day | Goal | Tasks |
-|-----|------|-------|
-| 1 | Setup Project | Init Next.js + Tailwind + shadcn/ui + Supabase |
-| 2 | User Auth | Implement register/login/logout pages using Supabase |
-| 3 | Task CRUD | Create task DB in Supabase, build task list UI |
-| 4 | Task Filters + Dark Mode | Add filtering (by tag/status) and toggle theme |
-| 5 | Add AI (Gemini API) | Build "suggest 3 tasks" button with Gemini API gemini-2.5-pro (Changed from OpenAI text-davinci/gpt-3.5) |
-| 6 | Polish UI | Add animations (Framer Motion), responsive layout, UX cleanup |
-| 7 | Deploy & Share | Deploy to Vercel, test user flow, write simple README |
+<h2>Features</h2>
 
-## Tools/Stack
+| Feature                                          | Tools to Learn/Use                       |
+| ------------------------------------------------ | ---------------------------------------- |
+| Sign up / Sign in                                | Supabase Auth + shadcn/ui Inputs/Dialogs |
+| Create/edit/delete task                          | Supabase DB (PostgreSQL)                 |
+| Tag tasks as “Todo”, “In Progress”, “Done”       | UI logic + DB updates                    |
+| Filter/search tasks                              | Tailwind forms + query filters           |
+| AI: Breaks down high-level tasks into mini tasks | Gemini API (text generation)             |
+| Dark mode toggle                                 | Next.js Dark mode                        |
 
-- **Frontend:** Next.js + Tailwind CSS  
-- **UI Kit:** shadcn/ui (Buttons, Dialogs, Tabs, etc.)  
-- **Backend/DB:** Supabase (Auth, DB, Storage)  
-- **AI:** Gemini API for task suggestions  
-- **Deployment:** Vercel (1-click for Next.js)  
-- **Animation:** Framer Motion (for small touches)
+<h2>Light Mode</h2>
 
-## Pages
+<div style="display:flex; justify-content:center; align-items:center;">
+  <img src="taskm_light.gif" height=300>
+</div>
 
-- `/login` – Sign in / Sign up (Supabase)  
-- `/dashboard` – View and filter tasks  
-- `/task/[id]` – Task details and notes  
-- `/settings` – Toggle theme, logout, manage profile
+<h2>Dark Mode</h2>
 
-## Takeaways (What will be learned)
+<div style="display:flex; justify-content:center; align-items:center;">
+  <img src="taskm_dark.gif" height=300>
+</div>
 
-- Tailwind + shadcn/ui layout and theming  
-- Supabase full-stack usage (Auth, DB, Storage)  
-- RESTful client-side data fetching  
-- Basic integration with Gemini API  
-- How to ship a real web app in a week  
+<div>
+   <p style="margin-top: 50px">This project is supposed to be a one week sprint project for learning Next.js</p>
+
+<a href="PLAN.md" target="_blank" style="
+    display: inline-block;
+    padding: 0.5em 1em;
+    background-color: #1e293d;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: sans-serif;
+  ">See One-Week Sprint Plan →</a>
+
+  <h4 style="text-align: end">Developed by Christopher A. Quinto</h4>
+</div>
