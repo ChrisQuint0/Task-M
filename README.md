@@ -43,7 +43,7 @@
 
 <h2>Features</h2>
 
-| Feature                                          | Tools to Learn/Use                       |
+| Feature                                          | Tools                                    |
 | ------------------------------------------------ | ---------------------------------------- |
 | Sign up / Sign in                                | Supabase Auth + shadcn/ui Inputs/Dialogs |
 | Create/edit/delete task                          | Supabase DB (PostgreSQL)                 |
